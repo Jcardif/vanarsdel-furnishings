@@ -1,0 +1,13 @@
+global using VanArsdel.DataGenerator.Utils;
+global using VanArsdel.DataGenerator.Enums;
+global using VanArsdel.DataGenerator.Domains.Retail;
+global using VanArsdel.DataGenerator.Domains.Profiles;
+global using VanArsdel.DataGenerator.Domains.LoyaltyAccount;
+global using VanArsdel.DataGenerator.Domains.HR;
+global using static VanArsdel.DataGenerator.Constants.LocationData;
+global using static VanArsdel.DataGenerator.Constants.ProductData;
+global using static VanArsdel.DataGenerator.Constants.PriceRangeData;
+global using static VanArsdel.DataGenerator.Generators.StoreGenerator;
+global using static VanArsdel.DataGenerator.Generators.CustomerProfileGenerator;
+global using static VanArsdel.DataGenerator.Generators.SupplierProfileGenerator;
+global using static VanArsdel.DataGenerator.Generators.ProductCategoryGenerator;
