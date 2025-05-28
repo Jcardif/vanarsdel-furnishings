@@ -1,6 +1,6 @@
 namespace VanArsdel.DataGenerator.Domains.Retail;
 
-public class Discounts
+public class Discount
 {
     public Guid DiscountId { get; init; }
     public Guid ProductId { get; init; }

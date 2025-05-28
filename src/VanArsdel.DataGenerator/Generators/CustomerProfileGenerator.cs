@@ -9,11 +9,12 @@ public static class CustomerProfileGenerator
 {
     private static readonly string[] DelimiterItems = { ".", "_", "-", "" };
 
-    public static List<CustomerProfile> GenerateCustomerProfiles(List<Store> stores,
+    public static (List<CustomerProfile> profiles, List<LoyaltyAccount> loyaltyAccounts) GenerateCustomerProfiles(List<Store> stores,
         int basePerStore = 160_000,
         double annualGrowthRate = 0.15)
     {
         var profiles = new ConcurrentBag<CustomerProfile>();
+        var loyaltyAccounts = new ConcurrentBag<LoyaltyAccount>();
         
         // track all generated emails to prevent duplicates
         var usedEmails = new ConcurrentDictionary<string, byte>();
@@ -47,6 +48,7 @@ public static class CustomerProfileGenerator
 
                 // Use a local list to reduce contention on the ConcurrentBag
                 var localProfiles = new List<CustomerProfile>(countThisYear);
+                var localLoyaltyAccounts = new List<LoyaltyAccount>(countThisYear);
 
                 for (var i = 0; i < countThisYear; i++)
                 {
@@ -66,9 +68,8 @@ public static class CustomerProfileGenerator
                         var suffix = faker.PickRandom(new List<string> { "", faker.Random.AlphaNumeric(4) });
                         email = $"{firstName.ToLower()}{emailDelimiter}{lastName.ToLower()}{suffix}@{domain}".ToLower();
                     } while (!usedEmails.TryAdd(email, 0));
-                
 
-                    localProfiles.Add(new CustomerProfile()
+                    var newCustomer = new CustomerProfile()
                     {
                         CustomerId = Guid.NewGuid(),
                         StoreRefId = store.StoreId,
@@ -76,16 +77,30 @@ public static class CustomerProfileGenerator
                         LastName = lastName,
                         Email = email,
                         JoinDate = joinDate
+                    };
+                    localProfiles.Add(newCustomer);
+                    
+                    // Generate a loyalty account for this customer
+                    localLoyaltyAccounts.Add(new LoyaltyAccount()
+                    {
+                        AccountId = Guid.NewGuid(),
+                        AccountNumber = faker.Random.AlphaNumeric(12),
+                        CreatedDate = joinDate,
+                        CustomerId = newCustomer.CustomerId,
+                        PointsBalance = 0
                     });
                 }
 
                 // Add local batch to the concurrent bag
                 foreach (var profile in localProfiles)
                     profiles.Add(profile);
+                
+                foreach (var account in localLoyaltyAccounts)
+                    loyaltyAccounts.Add(account);
 
             }
         });
 
-        return profiles.ToList();
+        return (profiles.ToList(), loyaltyAccounts.ToList());
     }
 }

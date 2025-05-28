@@ -1,6 +1,5 @@
 namespace VanArsdel.DataGenerator.Generators;
 
-public class TransactionGenerator
+public static class TransactionGenerator
 {
-    
 }

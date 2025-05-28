@@ -17,7 +17,7 @@ var stores = GenerateStores(from.ToDateTime(new TimeOnly()));
 AnsiConsole.MarkupLine($"[green]Generated {stores.Count} stores[/]");
 
 AnsiConsole.MarkupLine("[bold yellow]Generating customer profiles...[/]");
-var customerProfiles = GenerateCustomerProfiles(stores);
+var (customerProfiles, loyaltyAccounts) = GenerateCustomerProfiles(stores);
 AnsiConsole.MarkupLine($"[green]Generated {customerProfiles.Count} customer profiles[/]");
 
 AnsiConsole.MarkupLine("[bold yellow]Generating supplier profiles...[/]");
@@ -43,6 +43,10 @@ AnsiConsole.MarkupLine("[green]Saved stores.csv[/]");
 AnsiConsole.MarkupLine("[bold yellow]Saving customer_profiles.csv...[/]");
 await CsvFileWriter.WriteAsync(customerProfiles, Path.Combine(outDir, "customer_profiles.csv"));
 AnsiConsole.MarkupLine("[green]Saved customer_profiles.csv[/]");
+
+AnsiConsole.MarkupLine("[bold yellow]Saving loyalty_accounts.csv...[/]");
+await CsvFileWriter.WriteAsync(loyaltyAccounts, Path.Combine(outDir, "loyalty_accounts.csv"));
+AnsiConsole.MarkupLine("[green]Saved loyalty_accounts.csv[/]");
 
 AnsiConsole.MarkupLine("[bold yellow]Saving supplier_profiles.csv...[/]");
 await CsvFileWriter.WriteAsync(supplierProfiles, Path.Combine(outDir, "supplier_profiles.csv"));
