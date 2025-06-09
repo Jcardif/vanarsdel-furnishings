@@ -401,6 +401,6 @@ FodyWeavers.xsd
 .idea/
 
 # output folder
-Output/
+#Output/
 
 .DS_Store
