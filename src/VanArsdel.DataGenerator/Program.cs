@@ -36,33 +36,40 @@ AnsiConsole.MarkupLine("[bold yellow]Generating inventories...[/]");
 var inventories = InventoryGenerator.GenerateInventories(stores, categories, products, supplierProfiles, fxCsvPath);
 AnsiConsole.MarkupLine($"[green]Generated {inventories.Count} inventories[/]");
 
-AnsiConsole.MarkupLine("[bold yellow]Saving stores.csv...[/]");
-await CsvFileWriter.WriteAsync(stores, Path.Combine(outDir, "stores.csv"));
-AnsiConsole.MarkupLine("[green]Saved stores.csv[/]");
+// Save data split by country
+AnsiConsole.MarkupLine("[bold yellow]Saving stores by country...[/]");
+await CountryBasedCsvFileWriter.WriteAsync(stores, outDir, "Stores", "stores.csv", store => store.Country);
+AnsiConsole.MarkupLine("[green]Saved stores by country[/]");
 
-AnsiConsole.MarkupLine("[bold yellow]Saving customer_profiles.csv...[/]");
-await CsvFileWriter.WriteAsync(customerProfiles, Path.Combine(outDir, "customer_profiles.csv"));
-AnsiConsole.MarkupLine("[green]Saved customer_profiles.csv[/]");
+AnsiConsole.MarkupLine("[bold yellow]Saving customer profiles by country...[/]");
+await CountryBasedCsvFileWriter.WriteStoreBasedAsync(customerProfiles, stores, outDir, "CustomerProfiles", "customer_profiles.csv",
+    profile => profile.StoreRefId);
+AnsiConsole.MarkupLine("[green]Saved customer profiles by country[/]");
 
-AnsiConsole.MarkupLine("[bold yellow]Saving loyalty_accounts.csv...[/]");
-await CsvFileWriter.WriteAsync(loyaltyAccounts, Path.Combine(outDir, "loyalty_accounts.csv"));
-AnsiConsole.MarkupLine("[green]Saved loyalty_accounts.csv[/]");
+AnsiConsole.MarkupLine("[bold yellow]Saving loyalty accounts by country...[/]");
+// Create a lookup from CustomerId to StoreRefId to determine country
+var customerToStore = customerProfiles.ToDictionary(cp => cp.CustomerId, cp => cp.StoreRefId);
+await CountryBasedCsvFileWriter.WriteStoreBasedAsync(loyaltyAccounts, stores, outDir, "LoyaltyAccounts", "loyalty_accounts.csv",
+    account => customerToStore.TryGetValue(account.CustomerId, out var storeId) ? storeId : Guid.Empty);
+AnsiConsole.MarkupLine("[green]Saved loyalty accounts by country[/]");
 
-AnsiConsole.MarkupLine("[bold yellow]Saving supplier_profiles.csv...[/]");
-await CsvFileWriter.WriteAsync(supplierProfiles, Path.Combine(outDir, "supplier_profiles.csv"));
-AnsiConsole.MarkupLine("[green]Saved supplier_profiles.csv[/]");
+AnsiConsole.MarkupLine("[bold yellow]Saving supplier profiles by country...[/]");
+await CountryBasedCsvFileWriter.WriteAsync(supplierProfiles, outDir, "SupplierProfiles", "supplier_profiles.csv",
+    supplier => supplier.Country);
+AnsiConsole.MarkupLine("[green]Saved supplier profiles by country[/]");
 
-AnsiConsole.MarkupLine("[bold yellow]Saving product_categories.csv...[/]");
-await CsvFileWriter.WriteAsync(categories, Path.Combine(outDir, "product_categories.csv"));
-AnsiConsole.MarkupLine("[green]Saved product_categories.csv[/]");
+AnsiConsole.MarkupLine("[bold yellow]Saving product categories...[/]");
+await CountryBasedCsvFileWriter.WriteProductBasedAsync(categories, outDir, "ProductCategories", "product_categories.csv");
+AnsiConsole.MarkupLine("[green]Saved product categories[/]");
 
-AnsiConsole.MarkupLine("[bold yellow]Saving product_catalog.csv...[/]");
-await CsvFileWriter.WriteAsync(products, Path.Combine(outDir, "product_catalog.csv"));
-AnsiConsole.MarkupLine("[green]Saved product_catalog.csv[/]");
+AnsiConsole.MarkupLine("[bold yellow]Saving product catalog...[/]");
+await CountryBasedCsvFileWriter.WriteProductBasedAsync(products, outDir, "ProductCatalog", "product_catalog.csv");
+AnsiConsole.MarkupLine("[green]Saved product catalog[/]");
 
-AnsiConsole.MarkupLine("[bold yellow]Saving inventories.csv...[/]");
-await CsvFileWriter.WriteAsync(inventories, Path.Combine(outDir, "inventories.csv"));
-AnsiConsole.MarkupLine("[green]Saved inventories.csv[/]");
+AnsiConsole.MarkupLine("[bold yellow]Saving inventories by country...[/]");
+await CountryBasedCsvFileWriter.WriteStoreBasedAsync(inventories, stores, outDir, "Inventories", "inventories.csv",
+    inventory => inventory.StoreId);
+AnsiConsole.MarkupLine("[green]Saved inventories by country[/]");
 
 AnsiConsole.MarkupLine("[bold lime]All done![/]");
 
