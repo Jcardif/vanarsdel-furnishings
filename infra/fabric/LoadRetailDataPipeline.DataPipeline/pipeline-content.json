@@ -1,0 +1,171 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "ForEach",
+        "typeProperties": {
+          "items": {
+            "value": "@createArray('CustomerProfiles/customer_profiles_France.csv','CustomerProfiles/customer_profiles_Germany.csv','CustomerProfiles/customer_profiles_Japan.csv','CustomerProfiles/customer_profiles_South%20Africa.csv','CustomerProfiles/customer_profiles_United%20Kingdom.csv','CustomerProfiles/customer_profiles_United%20States.csv')",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "type": "Copy",
+              "typeProperties": {
+                "source": {
+                  "type": "DelimitedTextSource",
+                  "formatSettings": {
+                    "type": "DelimitedTextReadSettings"
+                  },
+                  "storeSettings": {
+                    "type": "HttpReadSettings",
+                    "requestMethod": "GET"
+                  },
+                  "datasetSettings": {
+                    "type": "DelimitedText",
+                    "typeProperties": {
+                      "location": {
+                        "type": "HttpServerLocation",
+                        "relativeUrl": {
+                          "value": "@item()",
+                          "type": "Expression"
+                        }
+                      },
+                      "columnDelimiter": ",",
+                      "quoteChar": "\"",
+                      "escapeChar": "\\",
+                      "firstRowAsHeader": true
+                    },
+                    "schema": [],
+                    "externalReferences": {
+                      "connection": "a7864d53-8b65-409f-9bc7-f8c64e67f4c6"
+                    },
+                    "annotations": []
+                  }
+                },
+                "sink": {
+                  "type": "FabricSqlDatabaseSink",
+                  "sqlWriterUseTableLock": false,
+                  "writeBehavior": "insert",
+                  "datasetSettings": {
+                    "type": "FabricSqlDatabaseTable",
+                    "typeProperties": {
+                      "schema": "dbo",
+                      "table": "CustomerProfile"
+                    },
+                    "schema": [],
+                    "connectionSettings": {
+                      "name": "RetailSqlDb",
+                      "properties": {
+                        "type": "FabricSqlDatabase",
+                        "typeProperties": {
+                          "artifactId": "43bf4ea2-52bc-8736-4457-3984f56bfbfd"
+                        },
+                        "externalReferences": {
+                          "connection": "63f11b04-c4f1-42cd-805d-4e773df450cc"
+                        },
+                        "annotations": []
+                      }
+                    },
+                    "annotations": []
+                  }
+                },
+                "translator": {
+                  "type": "TabularTranslator",
+                  "mappings": [
+                    {
+                      "source": {
+                        "name": "CustomerId",
+                        "type": "String",
+                        "physicalType": "String"
+                      },
+                      "sink": {
+                        "name": "CustomerId",
+                        "physicalType": "uniqueidentifier"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "FirstName",
+                        "type": "String",
+                        "physicalType": "String"
+                      },
+                      "sink": {
+                        "name": "FirstName",
+                        "physicalType": "nvarchar",
+                        "length": "100"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "LastName",
+                        "type": "String",
+                        "physicalType": "String"
+                      },
+                      "sink": {
+                        "name": "LastName",
+                        "physicalType": "nvarchar",
+                        "length": "100"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "Email",
+                        "type": "String",
+                        "physicalType": "String"
+                      },
+                      "sink": {
+                        "name": "Email",
+                        "physicalType": "nvarchar",
+                        "length": "255"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "JoinDate",
+                        "type": "String",
+                        "physicalType": "String"
+                      },
+                      "sink": {
+                        "name": "JoinDate",
+                        "physicalType": "date"
+                      }
+                    },
+                    {
+                      "source": {
+                        "name": "StoreRefId",
+                        "type": "String",
+                        "physicalType": "String"
+                      },
+                      "sink": {
+                        "name": "StoreRefId",
+                        "physicalType": "uniqueidentifier"
+                      }
+                    }
+                  ],
+                  "typeConversion": true,
+                  "typeConversionSettings": {
+                    "allowDataTruncation": true,
+                    "treatBooleanAsNumber": false
+                  }
+                },
+                "enableStaging": false
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "Copy data",
+              "dependsOn": []
+            }
+          ]
+        },
+        "name": "ForEach",
+        "dependsOn": []
+      }
+    ]
+  }
+}

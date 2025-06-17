@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "LoadRetailDataPipeline",
+    "description": "Load the retail data from the repo into the SQL Database"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "25f1ddf7-6ef7-8ac6-4d73-1e9f8d5359de"
+  }
+}
