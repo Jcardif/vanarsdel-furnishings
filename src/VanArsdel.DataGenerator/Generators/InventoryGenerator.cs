@@ -126,6 +126,7 @@ public static class InventoryGenerator
 
                 inventories.Add(new Inventory()
                 {
+                    InventoryId = Guid.NewGuid(),
                     CurrencyCode = currency,
                     LastReceived = lastReceivedDate,
                     Price = localPrice,
@@ -153,7 +154,7 @@ public static class InventoryGenerator
         if (totalWeight <= 0 || items.Count == 0 || items.Count != weights.Length)
         {
             // Handle edge cases: no items, no positive weights, or mismatch length
-            return items.Any() ? items[rng.Number(0, items.Count - 1)] : default;
+            return items.Any() ? items[rng.Number(0, items.Count - 1)] : default!;
         }
 
         var normalizedWeights = weights.Select(w => w / totalWeight).ToArray();
